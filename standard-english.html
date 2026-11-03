@@ -7,6 +7,7 @@
     <style>
         :root {
             --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #0f172a;
@@ -20,48 +21,129 @@
             --badge-card-text: #92400e;
         }
 
+        * { box-sizing: border-box; }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 24px;
+            padding: 16px 24px;
             line-height: 1.5;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
+        .layout-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
         }
 
-        .domain-header {
+        /* Sidebar Container */
+        .side-menu {
+            width: 280px;
+            flex-shrink: 0;
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
             border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        /* Pale Emerald Contrast Badge (No Overflow & Visual Separation from Blue Tabs) */
+        .domain-title-card {
+            background-color: #f0fdf4;
+            border: 1.5px solid #a7f3d0;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
         }
 
         .domain-title {
-            font-size: 1.35rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 0;
+            color: #065f46;
+            line-height: 1.35;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        .menu-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
             margin: 0 0 12px 0;
-            color: var(--primary-color);
+            font-weight: 700;
         }
 
-        .progress-box {
-            background: #f8fafc;
-            padding: 12px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .progress-header {
+        .menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
             display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
             justify-content: space-between;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .menu-item:hover { background-color: #f1f5f9; }
+
+        .menu-item.active {
+            background-color: #eff6ff;
+            color: var(--primary-color);
+            border-color: #bfdbfe;
             font-weight: 600;
-            font-size: 0.85rem;
-            margin-bottom: 6px;
+        }
+
+        .menu-badge {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+
+        /* Main Content Viewport */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Progress Card matching Main Content Width */
+        .progress-card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 12px 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+
+        .progress-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            white-space: nowrap;
         }
 
         .progress-track {
@@ -69,22 +151,31 @@
             height: 10px;
             border-radius: 5px;
             overflow: hidden;
+            flex: 1;
         }
 
         .progress-fill {
-            background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%);
+            background: linear-gradient(90deg, #60a5fa 0%, #34d399 100%);
             height: 100%;
             width: 0%;
             transition: width 0.4s ease-in-out;
+        }
+
+        .progress-text-inline {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #059669;
+            white-space: nowrap;
         }
 
         .topic-card {
             background-color: #ffffff;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 16px;
+            padding: 18px;
             margin-bottom: 16px;
             transition: border-color 0.2s;
+            display: none;
         }
 
         .topic-card.completed-topic {
@@ -93,8 +184,8 @@
         }
 
         .topic-title {
-            font-size: 1.05rem;
-            margin: 0 0 12px 0;
+            font-size: 1.1rem;
+            margin: 0 0 14px 0;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -110,14 +201,9 @@
             font-weight: bold;
         }
 
-        .completed-topic .topic-status-badge {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
         .resource-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 12px;
         }
 
@@ -140,15 +226,11 @@
             font-size: 0.85rem;
             font-weight: 500;
             transition: all 0.2s;
-            border: 1px solid transparent;
         }
 
         .btn-video { background-color: var(--badge-video); color: var(--badge-video-text); }
-        .btn-video:hover { background-color: #bfdbfe; }
         .btn-quiz { background-color: var(--badge-quiz); color: var(--badge-quiz-text); }
-        .btn-quiz:hover { background-color: #bbf7d0; }
         .btn-flashcard { background-color: var(--badge-card); color: var(--badge-card-text); }
-        .btn-flashcard:hover { background-color: #fde68a; }
 
         .resource-btn svg {
             margin-right: 6px;
@@ -165,205 +247,241 @@
             border: 1px solid #cbd5e1;
             background-color: #ffffff;
             color: #64748b;
-            user-select: none;
-            transition: all 0.2s;
         }
 
-        .status-toggle[data-status="todo"] {
-            background-color: #f1f5f9;
-            color: #64748b;
-        }
+        .status-toggle[data-status="todo"] { background-color: #f1f5f9; color: #64748b; }
+        .status-toggle[data-status="in-progress"] { background-color: #fef3c7; color: #92400e; border-color: #fde68a; }
+        .status-toggle[data-status="done"] { background-color: #10b981; color: #ffffff; border-color: #059669; }
 
-        .status-toggle[data-status="in-progress"] {
-            background-color: #fef3c7;
-            color: #92400e;
-            border-color: #fde68a;
-        }
-
-        .status-toggle[data-status="done"] {
-            background-color: #10b981;
-            color: #ffffff;
-            border-color: #059669;
+        @media (max-width: 768px) {
+            .layout-container {
+                flex-direction: column;
+            }
+            .side-menu {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="domain-header">
-            <h2 class="domain-title">Domain: Standard English Conventions</h2>
-            <div class="progress-box">
-                <div class="progress-header">
-                    <span>Domain Progress</span>
-                    <span id="progress-text">0% Completed</span>
-                </div>
+    <div class="layout-container">
+        <!-- SIDE MENU -->
+        <aside class="side-menu">
+            <div class="domain-title-card">
+                <h2 class="domain-title">Standard English Conventions</h2>
+            </div>
+            
+            <div class="menu-title">Micro-Topics</div>
+            <ul class="menu-list">
+                <li class="menu-item active" onclick="filterTopics('topic-1', this)">
+                    <span>1. Boundaries & Punctuation</span>
+                    <span class="menu-badge" id="badge-topic-1">0/3</span>
+                </li>
+                <li class="menu-item" onclick="filterTopics('topic-2', this)">
+                    <span>2. Subject-Verb Agreement</span>
+                    <span class="menu-badge" id="badge-topic-2">0/3</span>
+                </li>
+                <li class="menu-item" onclick="filterTopics('topic-3', this)">
+                    <span>3. Verb Tenses & Aspect</span>
+                    <span class="menu-badge" id="badge-topic-3">0/3</span>
+                </li>
+                <li class="menu-item" onclick="filterTopics('topic-4', this)">
+                    <span>4. Modifiers & Parallelism</span>
+                    <span class="menu-badge" id="badge-topic-4">0/3</span>
+                </li>
+                <li class="menu-item" onclick="filterTopics('topic-5', this)">
+                    <span>5. Pronoun Reference & Case</span>
+                    <span class="menu-badge" id="badge-topic-5">0/3</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+
+            <!-- PROGRESS BAR: MATCHES CONTENT WIDTH EXACTLY -->
+            <div class="progress-card">
+                <span class="progress-label">Domain Progress</span>
                 <div class="progress-track">
                     <div class="progress-fill" id="progress-fill"></div>
                 </div>
+                <span class="progress-text-inline" id="progress-text">0% Completed</span>
             </div>
-        </div>
 
-        <!-- MICRO-TOPIC 1 -->
-        <div class="topic-card">
-            <h3 class="topic-title">
-                <span>1. Boundaries & Punctuation</span>
-                <span class="topic-status-badge">In Progress</span>
-            </h3>
-            <div class="resource-grid">
-                <div class="resource-item">
-                    <a href="https://notebook.google.com/notebook/0c3723c8-a71f-4272-b9f4-a96a4e499281/artifact/340b0103-dc77-44a5-82a7-c1cf0bc3fae6" target="_blank" class="resource-btn btn-video">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Video Overview
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
-                </div>
-                <div class="resource-item">
-                    <a href="https://notebook.google.com/notebook/0c3723c8-a71f-4272-b9f4-a96a4e499281/artifact/ee94fb6e-f361-4942-85b6-ebda788773b3" target="_blank" class="resource-btn btn-quiz">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Practice Quiz
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
-                </div>
-                <div class="resource-item">
-                    <a href="https://notebook.google.com/notebook/0c3723c8-a71f-4272-b9f4-a96a4e499281/artifact/8d064a9a-b4c7-42c2-acdd-4a120bdb398c" target="_blank" class="resource-btn btn-flashcard">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        Flashcards
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MICRO-TOPIC 2 -->
-       <!-- <div class="topic-card">
-            <h3 class="topic-title">
-                <span>2. Subject-Verb Agreement</span>
-                <span class="topic-status-badge">In Progress</span>
-            </h3>
-            <div class="resource-grid">
-                <div class="resource-item">
-                    <a href="https://notebooklm.google.com/YOUR_VIDEO_URL_HERE" target="_blank" class="resource-btn btn-video">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Video Overview
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
-                </div>
-                <div class="resource-item">
-                    <a href="https://notebooklm.google.com/YOUR_QUIZ_URL_HERE" target="_blank" class="resource-btn btn-quiz">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Practice Quiz
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
-                </div>
-                <div class="resource-item">
-                    <a href="https://notebooklm.google.com/YOUR_FLASHCARD_URL_HERE" target="_blank" class="resource-btn btn-flashcard">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        Flashcards
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
+            <!-- MICRO-TOPIC 1 (Default visible) -->
+            <div class="topic-card" id="topic-1" style="display: block;">
+                <h3 class="topic-title">
+                    <span>1. Boundaries & Punctuation</span>
+                    <span class="topic-status-badge">In Progress</span>
+                </h3>
+                <div class="resource-grid">
+                    <div class="resource-item">
+                        <a href="https://notebook.google.com/notebook/0c3723c8-a71f-4272-b9f4-a96a4e499281/artifact/340b0103-dc77-44a5-82a7-c1cf0bc3fae6" target="_blank" class="resource-btn btn-video">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Video Overview
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
+                    <div class="resource-item">
+                        <a href="https://notebook.google.com/notebook/0c3723c8-a71f-4272-b9f4-a96a4e499281/artifact/ee94fb6e-f361-4942-85b6-ebda788773b3" target="_blank" class="resource-btn btn-quiz">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Practice Quiz
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
+                    <div class="resource-item">
+                        <a href="https://notebook.google.com/notebook/0c3723c8-a71f-4272-b9f4-a96a4e499281/artifact/8d064a9a-b4c7-42c2-acdd-4a120bdb398c" target="_blank" class="resource-btn btn-flashcard">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            Flashcards
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
                 </div>
             </div>
-        </div> -->
 
-        <!-- MICRO-TOPIC 3 -->
-        <!--<div class="topic-card">
-            <h3 class="topic-title">
-                <span>3. Verb Tenses & Aspect</span>
-                <span class="topic-status-badge">In Progress</span>
-            </h3>
-            <div class="resource-grid">
-                <div class="resource-item">
-                    <a href="https://notebooklm.google.com/YOUR_VIDEO_URL_HERE" target="_blank" class="resource-btn btn-video">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Video Overview
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
-                </div>
-                <div class="resource-item">
-                    <a href="https://notebooklm.google.com/YOUR_QUIZ_URL_HERE" target="_blank" class="resource-btn btn-quiz">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Practice Quiz
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
-                </div>
-                <div class="resource-item">
-                    <a href="https://notebooklm.google.com/YOUR_FLASHCARD_URL_HERE" target="_blank" class="resource-btn btn-flashcard">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        Flashcards
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
+            <!-- MICRO-TOPIC 2 -->
+            <div class="topic-card" id="topic-2">
+                <h3 class="topic-title">
+                    <span>2. Subject-Verb Agreement</span>
+                    <span class="topic-status-badge">In Progress</span>
+                </h3>
+                <div class="resource-grid">
+                    <div class="resource-item">
+                        <a href="https://notebooklm.google.com/YOUR_VIDEO_URL_HERE" target="_blank" class="resource-btn btn-video">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Video Overview
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
+                    <div class="resource-item">
+                        <a href="https://notebooklm.google.com/YOUR_QUIZ_URL_HERE" target="_blank" class="resource-btn btn-quiz">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Practice Quiz
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
+                    <div class="resource-item">
+                        <a href="https://notebooklm.google.com/YOUR_FLASHCARD_URL_HERE" target="_blank" class="resource-btn btn-flashcard">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            Flashcards
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
                 </div>
             </div>
-        </div>
-		-->
 
-        <!-- MICRO-TOPIC 4 -->
-        <!--<div class="topic-card">
-            <h3 class="topic-title">
-                <span>4. Modifiers & Parallelism</span>
-                <span class="topic-status-badge">In Progress</span>
-            </h3>
-            <div class="resource-grid">
-                <div class="resource-item">
-                    <a href="https://notebooklm.google.com/YOUR_VIDEO_URL_HERE" target="_blank" class="resource-btn btn-video">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Video Overview
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
-                </div>
-                <div class="resource-item">
-                    <a href="https://notebooklm.google.com/YOUR_QUIZ_URL_HERE" target="_blank" class="resource-btn btn-quiz">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Practice Quiz
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
-                </div>
-                <div class="resource-item">
-                    <a href="https://notebooklm.google.com/YOUR_FLASHCARD_URL_HERE" target="_blank" class="resource-btn btn-flashcard">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        Flashcards
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
+            <!-- MICRO-TOPIC 3 -->
+            <div class="topic-card" id="topic-3">
+                <h3 class="topic-title">
+                    <span>3. Verb Tenses & Aspect</span>
+                    <span class="topic-status-badge">In Progress</span>
+                </h3>
+                <div class="resource-grid">
+                    <div class="resource-item">
+                        <a href="https://notebooklm.google.com/YOUR_VIDEO_URL_HERE" target="_blank" class="resource-btn btn-video">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Video Overview
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
+                    <div class="resource-item">
+                        <a href="https://notebooklm.google.com/YOUR_QUIZ_URL_HERE" target="_blank" class="resource-btn btn-quiz">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Practice Quiz
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
+                    <div class="resource-item">
+                        <a href="https://notebooklm.google.com/YOUR_FLASHCARD_URL_HERE" target="_blank" class="resource-btn btn-flashcard">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            Flashcards
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
                 </div>
             </div>
-        </div>
-		-->
 
-        <!-- MICRO-TOPIC 5 -->
-        <!-- <div class="topic-card">
-            <h3 class="topic-title">
-                <span>5. Pronoun Reference & Case</span>
-                <span class="topic-status-badge">In Progress</span>
-            </h3>
-            <div class="resource-grid">
-                <div class="resource-item">
-                    <a href="https://notebooklm.google.com/YOUR_VIDEO_URL_HERE" target="_blank" class="resource-btn btn-video">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Video Overview
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
-                </div>
-                <div class="resource-item">
-                    <a href="https://notebooklm.google.com/YOUR_QUIZ_URL_HERE" target="_blank" class="resource-btn btn-quiz">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Practice Quiz
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
-                </div>
-                <div class="resource-item">
-                    <a href="https://notebooklm.google.com/YOUR_FLASHCARD_URL_HERE" target="_blank" class="resource-btn btn-flashcard">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        Flashcards
-                    </a>
-                    <button class="status-toggle" data-status="todo">⭕ Todo</button>
+            <!-- MICRO-TOPIC 4 -->
+            <div class="topic-card" id="topic-4">
+                <h3 class="topic-title">
+                    <span>4. Modifiers & Parallelism</span>
+                    <span class="topic-status-badge">In Progress</span>
+                </h3>
+                <div class="resource-grid">
+                    <div class="resource-item">
+                        <a href="https://notebooklm.google.com/YOUR_VIDEO_URL_HERE" target="_blank" class="resource-btn btn-video">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Video Overview
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
+                    <div class="resource-item">
+                        <a href="https://notebooklm.google.com/YOUR_QUIZ_URL_HERE" target="_blank" class="resource-btn btn-quiz">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Practice Quiz
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
+                    <div class="resource-item">
+                        <a href="https://notebooklm.google.com/YOUR_FLASHCARD_URL_HERE" target="_blank" class="resource-btn btn-flashcard">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            Flashcards
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
                 </div>
             </div>
-        </div>
-        -->
 
+            <!-- MICRO-TOPIC 5 -->
+            <div class="topic-card" id="topic-5">
+                <h3 class="topic-title">
+                    <span>5. Pronoun Reference & Case</span>
+                    <span class="topic-status-badge">In Progress</span>
+                </h3>
+                <div class="resource-grid">
+                    <div class="resource-item">
+                        <a href="https://notebooklm.google.com/YOUR_VIDEO_URL_HERE" target="_blank" class="resource-btn btn-video">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Video Overview
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
+                    <div class="resource-item">
+                        <a href="https://notebooklm.google.com/YOUR_QUIZ_URL_HERE" target="_blank" class="resource-btn btn-quiz">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Practice Quiz
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
+                    <div class="resource-item">
+                        <a href="https://notebooklm.google.com/YOUR_FLASHCARD_URL_HERE" target="_blank" class="resource-btn btn-flashcard">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            Flashcards
+                        </a>
+                        <button class="status-toggle" data-status="todo">⭕ Todo</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
 
     <script>
+        window.filterTopics = function(topicId, menuItem) {
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            menuItem.classList.add('active');
+
+            const topicCards = document.querySelectorAll('.topic-card');
+            topicCards.forEach(card => {
+                if (card.id === topicId) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             const toggles = document.querySelectorAll('.status-toggle');
             
@@ -419,7 +537,12 @@
 
                 document.querySelectorAll('.topic-card').forEach(card => {
                     const cardToggles = card.querySelectorAll('.status-toggle');
-                    const allDone = Array.from(cardToggles).every(t => t.getAttribute('data-status') === 'done');
+                    let cardDoneCount = 0;
+                    cardToggles.forEach(t => {
+                        if (t.getAttribute('data-status') === 'done') cardDoneCount++;
+                    });
+
+                    const allDone = cardDoneCount === cardToggles.length;
                     const topicBadge = card.querySelector('.topic-status-badge');
 
                     if (allDone) {
@@ -428,6 +551,11 @@
                     } else {
                         card.classList.remove('completed-topic');
                         if (topicBadge) topicBadge.textContent = 'In Progress';
+                    }
+
+                    const menuBadge = document.getElementById(`badge-${card.id}`);
+                    if (menuBadge) {
+                        menuBadge.textContent = `${cardDoneCount}/${cardToggles.length}`;
                     }
                 });
             }
